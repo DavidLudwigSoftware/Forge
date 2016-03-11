@@ -35,9 +35,9 @@ class ForgeParserStorage
      * @param  mixed $key The key the value is stored under
      * @return mixed      The value stored under the key
      */
-    public function get($key)
+    public function get($key, $default = Null)
     {
-        return isset($this->_data[$key]) ? $this->_data[$key] : Null;
+        return isset($this->_data[$key]) ? $this->_data[$key] : $default;
     }
 
     /**

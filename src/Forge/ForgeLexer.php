@@ -54,7 +54,7 @@ class ForgeLexer
     /**
      * Where to separate Html from Forge code
      */
-    private $_htmlSeparators = '@{(';
+    private $_htmlSeparators = '@#({';
 
 
     /**
@@ -83,7 +83,11 @@ class ForgeLexer
 
         for ($this->_index = 0; $this->_index < $this->_len; $this->next())
         {
-            if ($this->printStatement())
+            if ($this->comment())
+
+                continue;
+
+            elseif ($this->printStatement())
 
                 $this->_prevType = Token::PRINT_STATEMENT;
 
@@ -103,6 +107,30 @@ class ForgeLexer
         $this->_tokens[] = new Token(ForgeToken::EOF);
 
         return $this->_tokens;
+    }
+
+    /**
+     * Analyze a print statement
+     * @return bool
+     */
+    public function comment()
+    {
+        $c = $this->char();
+
+        if ($c == '#')
+
+            do
+            {
+                $this->next();
+                $c = $this->char();
+
+                if ($c == "\n")
+
+                    return True;
+
+            } while ($c !== Null);
+
+        return False;
     }
 
     /**

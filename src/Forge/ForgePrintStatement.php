@@ -26,7 +26,7 @@ class ForgePrintStatement
     public function __construct(string $symbols, string $content)
     {
         $this->_symbols = $symbols;
-        $this->_content = $content;
+        $this->_content = trim($content);
     }
 
     /**

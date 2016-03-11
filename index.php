@@ -20,7 +20,7 @@ $template = $forge->loadTemplate('index');
 
 
 // Render a template into Html
-$html = $template->render(['test' => 5]);
+$html = $template->render(['test' => 5, 'myArray' => [1, 2, 3, 4, 5]]);
 
 
 // Print the Html

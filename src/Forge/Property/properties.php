@@ -12,6 +12,10 @@ return [
     'foreach'    => 'Forge\Property\ForEachProperty@foreach',
     'endforeach' => 'Forge\Property\ForEachProperty@endforeach',
 
+    'forelse'    => 'Forge\Property\ForElseProperty@forelse',
+    'empty'      => 'Forge\Property\ForElseProperty@empty',
+    'endforelse' => 'Forge\Property\ForElseProperty@endforelse',
+
     'while'    => 'Forge\Property\WhileProperty@while',
     'endwhile' => 'Forge\Property\WhileProperty@endwhile',
 
