@@ -2,15 +2,6 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-function dd(...$args)
-{
-    echo "<pre>";
-    foreach ($args as $arg) var_dump($arg);
-    echo "</pre>";
-    exit();
-}
-
-
 $env = new Forge\ForgeEnvironment([
     'template_path' => __DIR__ . '/views',
     'cache' => __DIR__ .'/cache'
