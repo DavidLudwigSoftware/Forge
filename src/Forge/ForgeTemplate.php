@@ -10,16 +10,19 @@ class ForgeTemplate
         $this->_content = $content ?: '';
     }
 
-    public function render($variables = [])
+    /**
+     * Render a template into Html
+     * @param  array $variables A list of variables to use in the template
+     * @return string           The compiled view in Html form
+     */
+    public function render(array $variables = [])
     {
         extract($variables);
-        
+
         ob_start();
 
         eval("?>$this->_content<?php");
 
-        $html = ob_get_clean();
-
-        return $html;
+        return ob_get_clean();
     }
 }

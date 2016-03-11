@@ -9,26 +9,67 @@ use Forge\Exception\InvalidSyntaxError;
 
 class ForgeLexer
 {
-    private $_printStatements;
-
+    /**
+     * The content to parse
+     * @var string
+     */
     private $_content;
+
+    /**
+     * The length of the content
+     * @var integer
+     */
     private $_len;
 
+    /**
+     * The list of tokens
+     * @var array
+     */
     private $_tokens;
+
+    /**
+     * The previous token type
+     * @var string
+     */
     private $_prevType;
+
+    /**
+     * The data for the current token
+     * @var string
+     */
     private $_data;
 
+    /**
+     * The current character index
+     * @var integer
+     */
     private $_index;
+
+    /**
+     * The current line
+     * @var integer
+     */
     private $_line;
 
+    /**
+     * Where to separate Html from Forge code
+     */
     private $_htmlSeparators = '@{(';
 
 
+    /**
+     * Create a Fore code lexer
+     */
     public function __construct()
     {
 
     }
 
+    /**
+     * Analyze the content and create a list of tokens
+     * @param  string $content The content to analyze
+     * @return array           The list of tokens
+     */
     public function analyze(string $content)
     {
         $this->_content = $content;
@@ -64,6 +105,10 @@ class ForgeLexer
         return $this->_tokens;
     }
 
+    /**
+     * Analyze a print statement
+     * @return bool
+     */
     public function printStatement()
     {
         $c = $this->char();
@@ -128,6 +173,10 @@ class ForgeLexer
         return False;
     }
 
+    /**
+     * Analyze a property
+     * @return bool
+     */
     public function property()
     {
         $c = $this->char();
@@ -164,6 +213,10 @@ class ForgeLexer
         return False;
     }
 
+    /**
+     * Analyze some parameters
+     * @return bool
+     */
     public function parameters()
     {
         $c = $this->char();
@@ -225,6 +278,10 @@ class ForgeLexer
         return False;
     }
 
+    /**
+     * Analyze some Html
+     * @return bool
+     */
     public function html()
     {
         $c = $this->char();
@@ -255,6 +312,11 @@ class ForgeLexer
         return False;
     }
 
+    /**
+     * Get the character from the given offset
+     * @param  integer $offset The amount to offset the current index
+     * @return string          The character at the given offset
+     */
     public function char($offset = 0)
     {
         if ($this->_index + $offset >= $this->_len)
@@ -264,6 +326,11 @@ class ForgeLexer
         return $this->_content[$this->_index + $offset];
     }
 
+    /**
+     * Increase the character offset
+     * @param  integer $offset The amount to increase the character index
+     * @return void
+     */
     public function next($offset = 1)
     {
         for ($i = 0; $i < $offset; $i++)
@@ -276,9 +343,14 @@ class ForgeLexer
         }
     }
 
+    /**
+     * Decrease the character offset
+     * @param  integer $offset The amount to decrease the character index
+     * @return void
+     */
     public function prev($offset = 1)
     {
-        for ($i = $offset; $i >= 0; $i--)
+        for ($i = 0; $i < $offset; $i++)
         {
             $this->_index--;
 
@@ -288,15 +360,10 @@ class ForgeLexer
         }
     }
 
-    public function checkPrintStatement($symbol)
-    {
-        if (!isset($this->_printStatements[$symbol]))
-
-            throw new UnknownStatementError(
-                "Unknown 'print statement' on line $this->_line"
-            );
-    }
-
+    /**
+     * Check the current property
+     * @return void
+     */
     public function checkProperty()
     {
         if ($this->char() == Null)
@@ -312,6 +379,10 @@ class ForgeLexer
             $this->invalidProperty();
     }
 
+    /**
+     * Invoke an unexpected EOF error
+     * @return void
+     */
     public function unexpectedEof()
     {
         throw new InvalidSyntaxError(
@@ -319,6 +390,10 @@ class ForgeLexer
         );
     }
 
+    /**
+     * Invoke an unexpected property definition error
+     * @return void
+     */
     public function unexpectedPropertyDef()
     {
         throw new InvalidSyntaxError(
@@ -326,6 +401,10 @@ class ForgeLexer
         );
     }
 
+    /**
+     * Invoke an invalid property error
+     * @return void
+     */
     public function invalidProperty()
     {
         throw new InvalidSyntaxError(

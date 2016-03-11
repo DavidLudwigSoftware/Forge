@@ -6,24 +6,69 @@ use Forge\ForgeToken as Token;
 
 use Forge\Exception\InvalidPropertyError;
 use Forge\Exception\InvalidSyntaxError;
-use Forge\Exception\UnknownPropertyError;
 use Forge\Exception\UnknownStatementError;
 
 class ForgeParser
 {
+    /**
+     * Store the ForgeEngine instance
+     * @var Forge\ForgeEngine
+     */
     private $_forge;
 
+    /**
+     * The parts of the view
+     * @var array
+     */
     private $_parts;
-    private $_bufferIndex = 0;
 
+    /**
+     * The part buffer index
+     * @var integer
+     */
+    private $_bufferIndex;
+
+    /**
+     * A list of the print statemnets
+     * @var array
+     */
     private $_prints;
+
+    /**
+     * A list of the properties
+     * @var array
+     */
     private $_props;
+
+    /**
+     * The storage for the parser
+     * @var Forge\ForgeStorage
+     */
     private $_storage;
 
+    /**
+     * The list of tokens received from the lexer
+     * @var array
+     */
     private $_tokens;
+
+    /**
+     * The token count
+     * @var integer
+     */
     private $_tokenCount;
+
+    /**
+     * The current token index
+     * @var integer
+     */
     private $_index;
 
+
+    /**
+     * Create a ForgeParser
+     * @param Forge\ForgeEngine $forge An instance of the ForgeEngine
+     */
     public function __construct(ForgeEngine $forge)
     {
         $this->_forge = $forge;
@@ -35,11 +80,19 @@ class ForgeParser
         $this->_storage = new ForgeParserStorage();
     }
 
+    /**
+     * Load the print statements
+     * @return void
+     */
     protected function loadPrintStatements()
     {
         $this->_prints = require __DIR__ . '/PrintStatement/printstatements.php';
     }
 
+    /**
+     * Load the properties
+     * @return void
+     */
     protected function loadProperties()
     {
         $this->_props = Null;
@@ -51,6 +104,12 @@ class ForgeParser
             $this->resolveProperty($key, $prop);
     }
 
+    /**
+     * Resolve a loaded property
+     * @param  string $key  The forge property name
+     * @param  string $prop The class string
+     * @return void
+     */
     protected function resolveProperty(string $key, string $prop)
     {
         $parts = explode('@', $prop);
@@ -64,8 +123,15 @@ class ForgeParser
         $this->_props[$key] = $reflection;
     }
 
+    /**
+     * Parse the given content
+     * @param  string $content Html containing Forge code
+     * @return array           The view's parts
+     */
     public function parse(string $content)
     {
+        $this->_bufferIndex = 0;
+
         $lexer = new ForgeLexer();
 
         $this->_tokens = $lexer->analyze($content);
@@ -102,11 +168,21 @@ class ForgeParser
         return $this->parts();
     }
 
+    /**
+     * Parse an Html token
+     * @param  Forge\ForgeToken $token The current token
+     * @return void
+     */
     public function htmlToken($token)
     {
         $this->addPart($token->content());
     }
 
+    /**
+     * Parse a Print Statement token
+     * @param  Forge\ForgeToken $token The current token
+     * @return void
+     */
     public function printToken($token)
     {
         $symbols = $token->content()->symbols();
@@ -117,6 +193,11 @@ class ForgeParser
         $this->addPart('<?php echo ' . $statement->display() . ' ?>');
     }
 
+    /**
+     * Parse a Property token
+     * @param  Forge\ForgeToken $token The current token
+     * @return void
+     */
     public function propertyToken($token)
     {
         $name = $token->content();
@@ -155,6 +236,11 @@ class ForgeParser
             $this->addPart($result);
     }
 
+    /**
+     * Parse a Parameters token
+     * @param  Forge\ForgeToken $token The current token
+     * @return void
+     */
     public function parametersToken($token)
     {
         throw new InvalidSyntaxError(
@@ -162,28 +248,48 @@ class ForgeParser
         );
     }
 
+    /**
+     * Add a part to the current part buffer
+     * @param mixed $part The part to add
+     */
     public function addPart($part)
     {
         $this->_parts[$this->_bufferIndex][] = $part;
     }
 
-    public function addParts($parts)
+    /**
+     * Add multiple parts to the current part buffer
+     * @param array $parts The list of parts to add
+     */
+    public function addParts(array $parts)
     {
         foreach ($parts as $part)
 
             $this->addPart($part);
     }
 
+    /**
+     * Get the parts from the current part buffer
+     * @return array
+     */
     public function parts()
     {
         return $this->_parts[$this->_bufferIndex];
     }
 
+    /**
+     * Open a new part buffer
+     * @return void
+     */
     public function newBuffer()
     {
         $this->_parts[++$this->_bufferIndex] = array();
     }
 
+    /**
+     * Close the current part buffer
+     * @return array The parts from the closed buffer
+     */
     public function closeBuffer()
     {
         $parts = $this->parts();
@@ -193,24 +299,40 @@ class ForgeParser
         return $parts;
     }
 
-    public function mark($key, $name)
+    /**
+     * Add a marker to the parts
+     * @param  string $key  The key of the marker
+     * @param  string $name The name of the marker
+     * @return void
+     */
+    public function mark(string $key, string $name)
     {
         $this->addPart(new ForgeParserMarker($key, $name));
     }
 
-    public function fillMark($key, $name, $content)
+    /**
+     * Fill the markers with content
+     * @param  string $key     The key of the markers to fill
+     * @param  string $name    The name of the markers to fill
+     * @param  [type] $content The content to fill the marker with
+     * @return void
+     */
+    public function fillMarkers(string $key, string $name, $content)
     {
         foreach ($this->parts() as $part)
-        {
+
             if (is_a($part, 'Forge\ForgeParserMarker'))
 
                 if ($part->key() == $key && $part->name() == $name)
 
                     $part->fill($content);
-
-        }
     }
 
+    /**
+     * Get the token offsetted by the index
+     * @param  integer $offset  The offset of the index (0 = current token)
+     * @return Forge\ForgeToken The token at the given offset
+     */
     public function token($offset = 0)
     {
         if ($this->_index < $this->_tokenCount && $this->_index >= 0)
@@ -220,32 +342,60 @@ class ForgeParser
         return $this->_tokens[$this->_tokenCount - 1];
     }
 
+    /**
+     * Increase the token index by the given offset
+     * @param  integer $offset The amount to increase
+     * @return void
+     */
     public function next($offset = 1)
     {
         $this->_index += $offset;
     }
 
+    /**
+     * Decrease the token index by the given offset
+     * @param  integer $offset The amount to decrease
+     * @return void
+     */
     public function prev($offset = 1)
     {
         $this->_index -= $offset;
     }
 
+    /**
+     * Get the current Forge Engine instance
+     * @return Forge\ForgeEngine
+     */
     public function forge()
     {
         return $this->_forge;
     }
 
+    /**
+     * Get the current storage
+     * @return Forge\ForgeParserStorage
+     */
     public function storage()
     {
         return $this->_storage;
     }
 
-    public function invalidProperty($property)
+    /**
+     * Invoke an invalid property error
+     * @param  string $property The name of the property
+     * @return void
+     */
+    public function invalidProperty(string $property)
     {
         throw new InvalidPropertyError("Invalid property assigned '$property'");
     }
 
-    public function unknownProperty($property)
+    /**
+     * Invoke an unknown statement error
+     * @param  string $property The name of the property
+     * @return void
+     */
+    public function unknownProperty(string $property)
     {
         throw new UnknownStatementError("Unknown property '$property'");
     }

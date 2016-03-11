@@ -3,54 +3,50 @@
 namespace Forge;
 
 
-class ForgeParserStorage implements \ArrayAccess
+class ForgeParserStorage
 {
+    /**
+     * The storage variable
+     * @var array
+     */
     private $_data;
 
+    /**
+     * Create a ForgeParserStorage instance
+     */
     public function __construct()
     {
         $this->_data = array();
     }
 
+    /**
+     * Store some data in the storage
+     * @param  mixed $key   The key to store the value under
+     * @param  mixed $value The value to store
+     * @return void
+     */
     public function store($key, $value)
     {
         $this->_data[$key] = $value;
     }
 
+    /**
+     * Get the value from store if it exists
+     * @param  mixed $key The key the value is stored under
+     * @return mixed      The value stored under the key
+     */
     public function get($key)
     {
-        return $this->offsetGet($key);
+        return isset($this->_data[$key]) ? $this->_data[$key] : Null;
     }
 
+    /**
+     * Remove data from the storage
+     * @param  mixed $key The key to remove
+     * @return void
+     */
     public function remove($key)
     {
-        $this->offsetUnset($key);
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        if (is_null($offset))
-        {
-            $this->_data[] = $value;
-        }
-        else
-        {
-            $this->_data[$offset] = $value;
-        }
-    }
-
-    public function offsetExists($offset)
-    {
-        return isset($this->_data[$offset]);
-    }
-
-    public function offsetUnset($offset)
-    {
-        unset($this->_data[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return isset($this->_data[$offset]) ? $this->_data[$offset] : Null;
+        unset($this->_data[$key]);
     }
 }

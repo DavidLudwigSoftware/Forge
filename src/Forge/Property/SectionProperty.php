@@ -31,7 +31,7 @@ class SectionProperty extends \Forge\ForgeProperty
 
         $content = $this->parser()->closeBuffer();
 
-        $this->parser()->fillMark('section', $name, $content);
+        $this->parser()->fillMarkers('section', $name, $content);
     }
 
     public function yield($params)
