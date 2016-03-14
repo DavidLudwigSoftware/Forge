@@ -268,8 +268,6 @@ class ForgeLexer
 
                     $this->_data = '';
 
-                    $this->next();
-
                     return True;
                 }
                 elseif ($string === Null && ($c == '(' || $c == ')'))
