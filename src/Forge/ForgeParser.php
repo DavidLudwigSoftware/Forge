@@ -86,7 +86,7 @@ class ForgeParser
      */
     protected function loadPrintStatements()
     {
-        $this->_prints = require __DIR__ . '/PrintStatement/printstatements.php';
+        $this->_prints = require __DIR__ . '/Config/printstatements.php';
     }
 
     /**
@@ -97,7 +97,7 @@ class ForgeParser
     {
         $this->_props = Null;
 
-        $props = require __DIR__ . '/Property/properties.php';
+        $props = require __DIR__ . '/Config/properties.php';
 
         foreach ($props as $key => $prop)
 

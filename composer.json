@@ -1,5 +1,5 @@
 {
-    "name" : "forge",
+    "name" : "valib/forge",
     "description" : "Forge template engine",
     "license" : "MIT",
     "keywords" : ["forge", "template", "engine"],
@@ -21,7 +21,7 @@
     },
     "extra" : {
         "branch-alias" : {
-            "dev-master" : "1.0-dev"
+            "dev-master" : "1.1-dev"
         }
     }
 }

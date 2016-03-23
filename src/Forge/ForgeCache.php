@@ -22,13 +22,23 @@ class ForgeCache
     }
 
     /**
+     * Generate a name for the cache from the given view name
+     * @param string $view The name of the view
+     * @return string      The cached view name
+     */
+    public function name(string $view)
+    {
+        return $this->_env->cachePath() . '/' . md5($view) . '.forge.php';
+    }
+
+    /**
      * Determine if a cached file exists for the view
      * @param  string $view The name of the view
      * @return bool         True|False if the view exists
      */
     public function exists(string $view)
     {
-        return file_exists($this->_env->cachePath($view));
+        return file_exists($this->name($view));
     }
 
     /**
@@ -39,7 +49,7 @@ class ForgeCache
      */
     public function cache(string $view, string $content)
     {
-        $file = fopen($this->_env->cachePath($view), 'w');
+        $file = fopen($this->name($view), 'w');
 
         fwrite($file, trim($content));
 
@@ -53,6 +63,6 @@ class ForgeCache
      */
     public function load(string $view)
     {
-        return file_get_contents($this->_env->cachePath($view));
+        return file_get_contents($this->name($view));
     }
 }

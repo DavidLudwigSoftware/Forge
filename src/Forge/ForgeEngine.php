@@ -26,7 +26,7 @@ class ForgeEngine
     {
         $this->_env = $env;
 
-        if ($env->cache())
+        if ($env->cachePath())
 
             $this->_cache = new ForgeCache($env);
     }
@@ -52,8 +52,10 @@ class ForgeEngine
      */
     public function loadView(string $view)
     {
+        $name = str_replace('.', '/', $view);
+
         $content = $this->load(
-            $this->environment()->path($view)
+            $this->environment()->templatePath() . "/$name.forge.php"
         );
 
         return $this->parse($content);
@@ -67,8 +69,9 @@ class ForgeEngine
     public function loadTemplate(string $view)
     {
         if ($this->cache() && $this->cache()->exists($view))
-
+        {
             $content = $this->cache()->load($view);
+        }
 
         else
         {

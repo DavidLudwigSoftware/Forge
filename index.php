@@ -6,8 +6,9 @@ require __DIR__ . '/vendor/autoload.php';
 
 // Create the Forge environment
 $env = new Forge\ForgeEnvironment([
-    'template_path' => __DIR__ . '/views',
-    // 'cache' => __DIR__ .'/cache'
+    'asset_path'    => 'resources/assets',
+    'cache_path'    => __DIR__ . '/resources/cache',
+    'template_path' => __DIR__ . '/resources/views',
 ]);
 
 

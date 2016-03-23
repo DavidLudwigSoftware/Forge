@@ -25,4 +25,8 @@ return [
 
     'include' => 'Forge\Property\IncludeProperty@include',
     'extends' => 'Forge\Property\IncludeProperty@extends',
+
+    'javascript'      => 'Forge\Property\AssetProperty@javascript',
+    'stylesheet'     => 'Forge\Property\AssetProperty@stylesheet',
+    'depends' => 'Forge\Property\AssetProperty@dependency',
 ];

@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    @depends('jquery')
+    @stylesheet('styles')
+    @javascript('test')
 </head>
 <body>
     <div class="nav">

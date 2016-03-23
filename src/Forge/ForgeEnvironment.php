@@ -18,50 +18,41 @@ class ForgeEnvironment
     public function __construct(array $options = [])
     {
         $this->_options = [
-            'template_path' => '/',
-            'cache' => Null,
+            'asset_path'    => __DIR__,
+            'cache_path'    => Null,
+            'template_path' => __DIR__,
         ];
 
-        $this->_options = array_merge($this->_options, $options);
-    }
-
-    /**
-     * Get the path to a view
-     * @param  string $view The name of the view
-     * @return string       The absolute path to the view
-     */
-    public function path(string $view)
-    {
-        $path = $this->_options['template_path'];
-
-        $file = str_replace('.', '/', $view) . '.forge.php';
-
-        return $path . ($path[strlen($path) -1] != '/' ? '/' : '') . $file;
-    }
-
-    /**
-     * Get the cache path to a view
-     * @param  string $view The name of the view
-     * @return string       The absolute path to the view
-     */
-    public function cachePath(string $view)
-    {
-        if ($path = $this->_options['cache'])
+        foreach ($options as $key => $value)
         {
-            $file = md5($view) . '.forge.php';
-
-            return $path . ($path[strlen($path) -1] != '/' ? '/' : '') . $file;
+            $this->_options[$key] = rtrim($value, '/');
         }
-
-        return '';
     }
 
     /**
-     * Return the cache (used to determine if cache is enabled)
+     * Return the template path
+     * @return string
+     */
+    public function templatePath()
+    {
+        return $this->_options['template_path'];
+    }
+
+    /**
+     * Return the cache (null if no cache is set)
      * @return string|null
      */
-    public function cache()
+    public function cachePath()
     {
-        return $this->_options['cache'];
+        return $this->_options['cache_path'];
+    }
+
+    /**
+     * Return the asset path
+     * @return string
+     */
+    public function assetPath()
+    {
+        return $this->_options['asset_path'];
     }
 }
